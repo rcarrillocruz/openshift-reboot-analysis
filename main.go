@@ -2,6 +2,7 @@ package main
 
 import (
 	"archive/tar"
+	"bufio"
 	"flag"
 	"fmt"
 	"log"
@@ -23,6 +24,13 @@ func main() {
 		log.Fatal("Could not open file")
 	}
 
+	r := bufio.NewReader(f)
+	f2b, err := r.Peek(2) //read 2 bytes
+	if f2b[0] == 31 && f2b[1] == 139 {
+		log.Fatalf("File %s is gzipped", *mg)
+	}
+
+	f.Seek(0, 0)
 	tr := tar.NewReader(f)
 	h, err := tr.Next()
 	if err != nil {
